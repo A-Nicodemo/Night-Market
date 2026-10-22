@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nightmarket — Il tuo scontrino</title>
+<meta name="theme-color" content="#121110">
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#121110;--card:#1c1a17;--line:#302c27;--txt:#f6f1e7;--mut:#9d968b;--green:#1f8a4c;--green2:#2fb565;--red:#d7322b;--tag:#ffd84a;--err:#ff5a4a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 Inter,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{background:var(--bg) radial-gradient(#ffffff08 1px,transparent 1.4px) 0 0/14px 14px}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 64px}
+h1,h2,.disp{font-family:'Lilita One',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.02em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 16px}
+h2{font-size:28px;margin:0 0 14px;line-height:1}
+.center{text-align:center}
+.hide{display:none}
+.btn{display:block;width:100%;text-align:center;text-decoration:none;font-family:'Lilita One',Impact,sans-serif;font-size:22px;letter-spacing:.04em;text-transform:uppercase;background:var(--green);color:#fff;border:0;border-radius:12px;padding:15px;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #13552f}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #13552f}
+.btn[disabled]{opacity:.5}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);font-size:18px;box-shadow:none}
+.mut{color:var(--mut);font-size:14px}
+.top{text-align:center;padding:14px 0 18px}
+.top h1{font-size:52px;line-height:.9;margin:0}
+.kicker{font-family:'Lilita One',Impact,sans-serif;text-transform:uppercase;font-size:16px;color:var(--green2);margin-top:4px}
+.date{display:inline-block;margin-top:12px;font-family:'Lilita One',Impact,sans-serif;font-size:16px;text-transform:uppercase;border:1px solid var(--line);border-radius:30px;padding:5px 14px}
+.card{margin-bottom:14px}
+.big{font-size:20px;font-weight:700}
+.pw{font-family:'Lilita One',Impact,sans-serif;font-size:36px;color:var(--tag);text-align:center;letter-spacing:.04em;margin:4px 0;text-transform:uppercase}
+.park{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.park:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.park b{display:block}
+.pre{white-space:pre-line}
+.receipt{background:#fbfaf6;color:#1a1a1a;font-family:'Courier New',ui-monospace,monospace;font-size:14px;padding:22px 18px 26px;margin:0 6px 14px;position:relative;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.receipt:before,.receipt:after{content:"";position:absolute;left:0;right:0;height:10px;background:linear-gradient(-45deg,transparent 7px,#fbfaf6 0) 0 0/14px 10px,linear-gradient(45deg,transparent 7px,#fbfaf6 0) 0 0/14px 10px}
+.receipt:before{top:-10px;transform:rotate(180deg)}
+.receipt:after{bottom:-10px}
+.receipt .h{font-family:'Lilita One',Impact,sans-serif;font-size:26px;text-align:center;text-transform:uppercase;line-height:1}
+.receipt .c{text-align:center}
+.receipt hr{border:0;border-top:1px dashed #999;margin:12px 0}
+.receipt .ln{display:flex;justify-content:space-between;gap:10px}
+.receipt .tot{font-weight:700;font-size:16px}
+#qr{padding:6px;width:max-content;margin:10px auto 4px}
+#qr img,#qr canvas{display:block;width:200px;height:200px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1 id="title">Nightmarket</h1>
+    <div class="kicker" id="kicker">Capocanale x EatRosetta</div>
+    <div class="date" id="date"></div>
+  </div>
+  <div id="out"><p class="center mut">Caricamento…</p></div>
+</div>
+<script>
+/* ===== INCOLLA QUI L'URL /exec DELLO SCRIPT ===== */
+const API = 'https://script.google.com/macros/s/AKfycbyYH1y6zGMHO6tlKPegakduF2d_0aRHqBU2YQst9La7UcA9rQZfthO1uh7rx4bshhs/exec';
+
+function jsonp(params){return new Promise((res,rej)=>{const cb='cb'+Date.now()+Math.floor(Math.random()*1e4);const s=document.createElement('script');const t=setTimeout(()=>{c();rej()},25000);function c(){clearTimeout(t);delete window[cb];s.remove()}window[cb]=d=>{c();res(d)};params.callback=cb;s.src=API+'?'+new URLSearchParams(params);s.onerror=()=>{c();rej()};document.body.appendChild(s)})}
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(u||'')?esc(u):'';
+const q=new URLSearchParams(location.search);
+const id=q.get('id'),t=q.get('t');
+const out=document.getElementById('out');
+
+if(!id||!t){out.innerHTML='<div class="card center">Link non valido.</div>'}
+else jsonp({action:'reveal',id,t}).then(r=>{
+  if(!r.ok){out.innerHTML='<div class="card center">'+esc(r.error)+'</div>';return}
+  document.getElementById('title').textContent=r.titolo||'Nightmarket';document.getElementById('kicker').textContent=r.sottotitolo||'';
+  document.getElementById('date').textContent=r.data_testo||'';
+
+  if(!r.pagato){
+    let h='<div class="card"><h2>Ciao '+esc(r.nome)+'</h2><p>La tua prenotazione <b>'+esc(r.id)+'</b> è registrata, ma il pagamento non risulta ancora confermato.</p>';
+    if(r.stripe_link){const u=r.stripe_link+(r.stripe_link.includes('?')?'&':'?')+'client_reference_id='+encodeURIComponent(r.id);h+='<a class="btn" href="'+safeUrl(u)+'" target="_blank" rel="noopener">Paga '+esc(r.prezzo_testo)+'</a>'}
+    h+='<p class="mut" style="margin-top:14px">Se hai già pagato, la conferma può richiedere un po\' di tempo: ricarica questa pagina più tardi. '+(r.secret?'Il luogo si svela qui.':'Qui troverai il tuo biglietto.')+'</p></div>';
+    if(!r.secret&&(r.location_nome||safeUrl(r.location_maps))){h+='<div class="card"><h2>Dove</h2>'+(r.location_nome?'<div class="big">'+esc(r.location_nome)+'</div>':'')+(safeUrl(r.location_maps)?'<a class="btn ghost" href="'+safeUrl(r.location_maps)+'" target="_blank" rel="noopener">Apri in Maps</a>':'')+'</div>'}
+    out.innerHTML=h;return;
+  }
+
+  let h='<div class="card"><h2>Ciao '+esc(r.nome)+', ci sei</h2><p class="mut">Prenotazione '+esc(r.id)+' · pagata</p></div>';
+  h+='<div class="card"><h2>Dove</h2>';
+  h+=r.location_nome?'<div class="big">'+esc(r.location_nome)+'</div>':'<p class="mut">'+(r.secret?'Il luogo verrà svelato a breve. Torna su questa pagina nei prossimi giorni.':'Info in arrivo.')+'</p>';
+  if(safeUrl(r.location_maps))h+='<a class="btn" href="'+safeUrl(r.location_maps)+'" target="_blank" rel="noopener">Apri in Maps</a>';
+  h+='</div>';
+
+  const parks=String(r.parcheggi||'').split('\n').map(l=>l.split('|').map(x=>x.trim())).filter(p=>p[0]);
+  if(parks.length){
+    h+='<div class="card"><h2>Dove parcheggiare</h2>';
+    parks.forEach(p=>{h+='<div class="park"><b>'+esc(p[0])+'</b>'+(p[2]?'<span class="mut">'+esc(p[2])+'</span>':'')+(safeUrl(p[1])?'<a class="btn ghost" href="'+safeUrl(p[1])+'" target="_blank" rel="noopener">Portami qui</a>':'')+'</div>'});
+    h+='</div>';
+  }
+  if(r.ingresso_istruzioni||r.parola_ordine){
+    h+='<div class="card"><h2>Come entrare</h2>';
+    if(r.ingresso_istruzioni)h+='<p class="pre">'+esc(r.ingresso_istruzioni)+'</p>';
+    if(r.parola_ordine)h+='<p class="mut center" style="margin-bottom:0">Parola d\'ordine</p><div class="pw">'+esc(r.parola_ordine)+'</div>';
+    h+='</div>';
+  }
+  h+='<div class="receipt"><div class="h">'+esc(r.titolo||'Nightmarket')+'</div><div class="c">'+esc(r.sottotitolo||'')+'</div><div class="c">'+esc(r.data_testo||'')+'</div><hr>'+
+     '<div class="ln"><span>CLIENTE</span><span>'+esc(r.nome)+'</span></div><div class="ln"><span>N. SCONTRINO</span><span>'+esc(r.id)+'</span></div><hr>'+
+     '<div class="ln"><span>1 X CENA + DRINK</span><span>'+esc(r.prezzo_testo||'')+'</span></div><div class="ln tot"><span>TOTALE</span><span>PAGATO</span></div><hr>'+
+     '<div id="qr"></div><div class="c">MOSTRA ALL\'INGRESSO</div><div class="c">*** GRAZIE E ARRIVEDERCI ***</div></div>';
+  if(r.contatto_tel)h+='<div class="card center mut">Per qualsiasi cosa: <a style="color:var(--acc)" href="tel:'+esc(r.contatto_tel.replace(/\s/g,''))+'">'+esc(r.contatto_tel)+'</a></div>';
+  out.innerHTML=h;
+  try{new QRCode(document.getElementById('qr'),{text:'NM|'+r.id+'|'+t,width:200,height:200,correctLevel:QRCode.CorrectLevel.M})}catch(e){}
+}).catch(()=>{out.innerHTML='<div class="card center">Connessione assente, ricarica la pagina.</div>'});
+</script>
+</body>
+</html>

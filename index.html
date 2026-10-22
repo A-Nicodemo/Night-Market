@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nightmarket — Capocanale x EatRosetta</title>
+<meta name="theme-color" content="#121110">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121110;--card:#1c1a17;--line:#302c27;--txt:#f6f1e7;--mut:#9d968b;--green:#1f8a4c;--green2:#2fb565;--red:#d7322b;--tag:#ffd84a;--err:#ff5a4a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 Inter,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{background:var(--bg) radial-gradient(#ffffff08 1px,transparent 1.4px) 0 0/14px 14px}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 64px}
+h1,h2,.disp{font-family:'Lilita One',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.02em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 16px}
+h2{font-size:28px;margin:0 0 14px;line-height:1}
+.center{text-align:center}
+.hide{display:none}
+.btn{display:block;width:100%;text-align:center;text-decoration:none;font-family:'Lilita One',Impact,sans-serif;font-size:22px;letter-spacing:.04em;text-transform:uppercase;background:var(--green);color:#fff;border:0;border-radius:12px;padding:15px;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #13552f}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #13552f}
+.btn[disabled]{opacity:.5}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);font-size:18px;box-shadow:none}
+.mut{color:var(--mut);font-size:14px}
+header{padding:4px 0 0}
+header img{width:100%;border-radius:16px;display:block;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+.ttl{text-align:center;padding:22px 0 0}
+.ttl h1{font-size:clamp(40px,13vw,60px);line-height:.9;margin:0}
+.kicker{font-family:'Lilita One',Impact,sans-serif;text-transform:uppercase;font-size:18px;letter-spacing:.04em;color:var(--green2);margin-top:6px}
+.date{display:inline-block;margin-top:14px;font-family:'Lilita One',Impact,sans-serif;font-size:18px;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--line);border-radius:30px;padding:6px 16px}
+.intro{color:#d8d2c6;margin:22px 0 26px;white-space:pre-line;text-align:center;font-size:17px}
+label.f{display:block;margin:0 0 14px}
+label.f>span{display:block;font-size:13px;color:var(--mut);margin-bottom:5px}
+input,select,textarea{width:100%;font:16px Inter,sans-serif;color:var(--txt);background:#141311;border:1px solid var(--line);border-radius:10px;padding:12px;-webkit-appearance:none;appearance:none}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green2)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bad input,.bad select{border-color:var(--err)}
+.msg{display:none;color:var(--err);font-size:13px;margin-top:4px}
+.bad .msg{display:block}
+.hint{font-size:12px;color:var(--mut);margin-top:4px}
+.privacy{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;margin-bottom:6px}
+.privacy input{width:22px;height:22px;flex:0 0 22px;margin:2px 0 0;-webkit-appearance:checkbox;appearance:checkbox;accent-color:var(--green2)}
+.privacy span{font-size:13px;color:#cfc9bd}
+.privacy.bad{border-color:var(--err)}
+.price{margin:0 auto 28px;max-width:290px;background:var(--tag);color:#141414;border-radius:4px;padding:14px 18px 16px;transform:rotate(-2.5deg);box-shadow:0 10px 30px rgba(0,0,0,.45);text-align:center;border-top:10px solid var(--red)}
+.price .lab{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+.price .val{font-family:'Lilita One',Impact,sans-serif;font-size:64px;line-height:1;color:var(--red)}
+.price .inc{font-size:14px;font-weight:500}
+.price .bar{height:20px;margin:10px auto 0;width:70%;background:repeating-linear-gradient(90deg,#141414 0 2px,transparent 2px 4px,#141414 4px 5px,transparent 5px 8px,#141414 8px 11px,transparent 11px 12px)}
+.box{background:#141311;border:1px dashed var(--line);border-radius:10px;padding:12px;font-size:14px;word-break:break-all;margin:10px 0}
+.small{font-size:13px;color:var(--mut)}
+.err{color:var(--err);margin-top:10px;font-size:14px}
+.big{font-size:19px;font-weight:700}
+footer{text-align:center;color:var(--mut);font-size:12px;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="hdr"><img id="hdrImg" class="hide" alt=""></header>
+  <div class="ttl">
+    <h1 id="title">Nightmarket</h1>
+    <div class="kicker" id="kicker">Capocanale x EatRosetta</div>
+    <div class="date" id="date">Sabato 31 ottobre · ore 21:30</div>
+  </div>
+  <p class="intro" id="intro"></p>
+  <div class="card center hide" id="where" style="margin-bottom:28px"><h2>Dove</h2><div class="big" id="whereName"></div><a class="btn ghost hide" id="whereMaps" target="_blank" rel="noopener">Apri in Maps</a></div>
+
+  <div class="price hide" id="price">
+    <div class="lab">Prezzo a persona</div>
+    <div class="val" id="pVal">35 €</div>
+    <div class="inc" id="pInc">Antipasto, primo, dolce e un drink</div>
+    <div class="bar"></div>
+  </div>
+
+  <div id="loading" class="center small">Caricamento…</div>
+
+  <div id="closed" class="card center hide"><h2>Saracinesca abbassata</h2><p id="closedMsg"></p></div>
+
+  <form id="form" class="card hide" novalidate>
+    <h2>Prenota il tuo posto</h2>
+    <div class="row">
+      <label class="f" data-k="nome"><span>Nome</span><input name="nome" autocomplete="given-name"><div class="msg">Inserisci il nome</div></label>
+      <label class="f" data-k="cognome"><span>Cognome</span><input name="cognome" autocomplete="family-name"><div class="msg">Inserisci il cognome</div></label>
+    </div>
+    <div class="row">
+      <label class="f" data-k="sesso"><span>Sesso</span>
+        <select name="sesso"><option value="">—</option><option value="M">M</option><option value="F">F</option></select>
+        <div class="msg">Seleziona</div></label>
+      <label class="f" data-k="nascita"><span>Data di nascita</span><input name="nascita" type="date" max="2010-12-31"><div class="msg">Inserisci la data</div></label>
+    </div>
+    <label class="f" data-k="luogo"><span>Luogo di nascita</span>
+      <input name="luogo" list="comuni" placeholder="Inizia a scrivere il comune…" autocomplete="off">
+      <datalist id="comuni"></datalist>
+      <div class="hint">Se sei nato all'estero scrivi lo Stato (es. Germania)</div>
+      <div class="msg">Scegli un comune dalla lista</div></label>
+    <label class="f" data-k="cf"><span>Codice fiscale</span>
+      <input name="cf" maxlength="16" autocapitalize="characters" autocomplete="off" spellcheck="false">
+      <div class="hint">Si compila da solo, controllalo</div>
+      <div class="msg">Codice fiscale non valido</div></label>
+    <label class="f" data-k="email"><span>Email</span><input name="email" type="email" inputmode="email" autocomplete="email"><div class="msg">Email non valida</div></label>
+    <label class="f" data-k="wa"><span>Numero WhatsApp</span><input name="wa" type="tel" inputmode="tel" autocomplete="tel" placeholder="333 1234567">
+      <div class="hint">Ti scriveremo qui per info e aggiornamenti sulla serata. Se non è italiano, inserisci il prefisso (es. +49…)</div>
+      <div class="msg">Inserisci un numero WhatsApp valido</div></label>
+    <label class="f"><span>Profilo Instagram (facoltativo)</span><input name="ig" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="@tuonome"></label>
+    <label class="f"><span>Intolleranze, allergie o note (facoltativo)</span><textarea name="note" maxlength="500"></textarea></label>
+    <label class="privacy" data-k="privacy">
+      <input type="checkbox" name="privacy">
+      <span>Acconsento al trattamento dei miei dati da parte di The Capo Canale APS per la gestione dell'evento e l'iscrizione all'associazione, e ad essere contattato via WhatsApp ed email per comunicazioni sulla serata.</span>
+    </label>
+    <button class="btn" id="send" type="submit">Prenota</button>
+    <div class="err" id="err"></div>
+  </form>
+
+  <div id="done" class="card hide">
+    <h2>Sei nel carrello. Quasi.</h2>
+    <p>Prenotazione <b id="dId"></b> registrata.</p>
+    <div id="payBlock">
+      <p>Completa il pagamento per confermare il posto:</p>
+      <a class="btn" id="payBtn" target="_blank" rel="noopener">Paga ora</a>
+    </div>
+    <p id="payLater" class="hide">Ti mandiamo a breve il link per il pagamento.</p>
+    <p style="margin-top:22px">Questo è il <b>tuo link personale</b>. <span id="revTxt">Dopo il pagamento ti svela dove andare, come entrare e il tuo biglietto.</span> Salvalo:</p>
+    <div class="box" id="revLink"></div>
+    <button class="btn ghost" id="copyBtn" type="button">Copia link</button>
+    <a class="btn ghost" id="revBtn">Apri il mio link</a>
+  </div>
+
+
+  <footer>The Capo Canale APS</footer>
+</div>
+
+<script>
+/* ===== INCOLLA QUI L'URL /exec DELLO SCRIPT ===== */
+const API = 'https://script.google.com/macros/s/AKfycbyYH1y6zGMHO6tlKPegakduF2d_0aRHqBU2YQst9La7UcA9rQZfthO1uh7rx4bshhs/exec';
+
+function jsonp(params){
+  return new Promise((res,rej)=>{
+    const cb='cb'+Date.now()+Math.floor(Math.random()*1e4);
+    const s=document.createElement('script');
+    const t=setTimeout(()=>{cleanup();rej(new Error('timeout'))},25000);
+    function cleanup(){clearTimeout(t);delete window[cb];s.remove()}
+    window[cb]=d=>{cleanup();res(d)};
+    params.callback=cb;
+    s.src=API+'?'+new URLSearchParams(params).toString();
+    s.onerror=()=>{cleanup();rej(new Error('rete'))};
+    document.body.appendChild(s);
+  });
+}
+const $=id=>document.getElementById(id);
+const F=$('form');
+
+/* ---------- comuni + stati esteri ---------- */
+const ESTERI={"ALBANIA":"Z100","ARGENTINA":"Z600","AUSTRIA":"Z102","BELGIO":"Z103","BRASILE":"Z602","CANADA":"Z401","CINA":"Z210","FRANCIA":"Z110","GERMANIA":"Z112","GRECIA":"Z115","MAROCCO":"Z330","PAESI BASSI":"Z126","POLONIA":"Z127","REGNO UNITO":"Z114","ROMANIA":"Z129","RUSSIA":"Z154","SPAGNA":"Z131","STATI UNITI":"Z404","SVIZZERA":"Z133","TUNISIA":"Z352","UCRAINA":"Z138","VENEZUELA":"Z614"};
+const LUOGHI={};
+function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim()}
+fetch('https://cdn.jsdelivr.net/gh/matteocontrini/comuni-json@master/comuni.json')
+  .then(r=>r.json()).then(list=>{
+    const dl=$('comuni');const frag=document.createDocumentFragment();
+    list.forEach(c=>{const lab=c.nome+' ('+c.sigla+')';LUOGHI[norm(lab)]=c.codiceCatastale;const o=document.createElement('option');o.value=lab;frag.appendChild(o)});
+    Object.keys(ESTERI).forEach(k=>{const lab=k.charAt(0)+k.slice(1).toLowerCase()+' (EE)';LUOGHI[norm(lab)]=ESTERI[k];const o=document.createElement('option');o.value=lab;frag.appendChild(o)});
+    dl.appendChild(frag);calcCF();
+  }).catch(()=>{});
+
+/* ---------- codice fiscale ---------- */
+function lettere(s){return norm(s).replace(/[^A-Z]/g,'')}
+function cons(s){return s.replace(/[AEIOU]/g,'')}
+function voc(s){return s.replace(/[^AEIOU]/g,'')}
+function cfCognome(s){s=lettere(s);return (cons(s)+voc(s)+'XXX').slice(0,3)}
+function cfNome(s){s=lettere(s);const c=cons(s);if(c.length>=4)return c[0]+c[2]+c[3];return (c+voc(s)+'XXX').slice(0,3)}
+const ODD={0:1,1:0,2:5,3:7,4:9,5:13,6:15,7:17,8:19,9:21,A:1,B:0,C:5,D:7,E:9,F:13,G:15,H:17,I:19,J:21,K:2,L:4,M:18,N:20,O:11,P:3,Q:6,R:8,S:12,T:14,U:16,V:10,W:22,X:25,Y:24,Z:23};
+function ctrl(cf){let s=0;for(let i=0;i<15;i++){const ch=cf[i];s+= i%2===0?ODD[ch]:(/\d/.test(ch)?+ch:ch.charCodeAt(0)-65)}return String.fromCharCode(65+s%26)}
+let cfManual=false;
+function calcCF(){
+  if(cfManual)return;
+  const v=n=>F.elements[n].value;
+  const cod=LUOGHI[norm(v('luogo'))];
+  if(!v('nome')||!v('cognome')||!v('sesso')||!v('nascita')||!cod)return;
+  const [y,m,d]=v('nascita').split('-');
+  const g=+d+(v('sesso')==='F'?40:0);
+  const base=cfCognome(v('cognome'))+cfNome(v('nome'))+y.slice(2)+'ABCDEHLMPRST'[+m-1]+String(g).padStart(2,'0')+cod;
+  F.elements.cf.value=base+ctrl(base);
+}
+['nome','cognome','sesso','nascita','luogo'].forEach(n=>F.elements[n].addEventListener('input',()=>{cfManual=false;calcCF()}));
+F.elements.cf.addEventListener('input',e=>{cfManual=true;e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'')});
+function cfOk(cf){return /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/.test(cf)&&ctrl(cf)===cf[15]}
+
+/* ---------- validazione ---------- */
+function validate(){
+  const e=F.elements;const bad=[];
+  const chk=(k,ok)=>{const el=F.querySelector('[data-k="'+k+'"]');el.classList.toggle('bad',!ok);if(!ok)bad.push(el)};
+  chk('nome',e.nome.value.trim().length>0);
+  chk('cognome',e.cognome.value.trim().length>0);
+  chk('sesso',!!e.sesso.value);
+  chk('nascita',!!e.nascita.value);
+  chk('luogo',!!LUOGHI[norm(e.luogo.value)]||Object.keys(LUOGHI).length===0&&e.luogo.value.trim().length>1);
+  chk('cf',cfOk(e.cf.value));
+  chk('email',/^\S+@\S+\.\S+$/.test(e.email.value.trim()));
+  chk('wa',e.wa.value.replace(/\D/g,'').length>=9);
+  chk('privacy',e.privacy.checked);
+  if(bad.length){const y=bad[0].getBoundingClientRect().top+window.scrollY-90;window.scrollTo({top:y,behavior:'smooth'})}
+  return !bad.length;
+}
+
+F.addEventListener('submit',async ev=>{
+  ev.preventDefault();$('err').textContent='';
+  if(!validate())return;
+  const e=F.elements;const b=$('send');b.disabled=true;b.textContent='Invio…';
+  try{
+    const r=await jsonp({action:'register',nome:e.nome.value.trim(),cognome:e.cognome.value.trim(),sesso:e.sesso.value,
+      nascita:e.nascita.value.split('-').reverse().join('/'),luogo:e.luogo.value.trim(),cf:e.cf.value,
+      email:e.email.value.trim(),wa:e.wa.value.trim(),ig:e.ig.value.trim(),note:e.note.value.trim()});
+    if(!r.ok){
+      if(r.full){showClosed(r.error);return}
+      $('err').textContent=r.error||'Errore, riprova';return;
+    }
+    showDone(r,e.email.value.trim());
+  }catch(x){$('err').textContent='Connessione assente, riprova.'}
+  finally{b.disabled=false;b.textContent='Prenota'}
+});
+
+function showDone(r,email){
+  F.classList.add('hide');$('done').classList.remove('hide');
+  $('dId').textContent=r.id;
+  const rev=new URL('reveal.html',location.href);rev.searchParams.set('id',r.id);rev.searchParams.set('t',r.token);
+  $('revLink').textContent=rev.href;$('revBtn').href=rev.href;
+  if(r.stripe_link){
+    const u=r.stripe_link+(r.stripe_link.includes('?')?'&':'?')+'client_reference_id='+encodeURIComponent(r.id)+'&prefilled_email='+encodeURIComponent(email);
+    $('payBtn').href=u;
+  }else{$('payBlock').classList.add('hide');$('payLater').classList.remove('hide')}
+  window.scrollTo({top:$('done').offsetTop-20,behavior:'smooth'});
+}
+$('copyBtn').onclick=()=>{const t=$('revLink').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('copyBtn').textContent='Copiato ✓'}).catch(()=>{prompt('Copia il link:',t)})};
+
+function showClosed(msg){$('loading').classList.add('hide');F.classList.add('hide');$('closedMsg').textContent=msg;$('closed').classList.remove('hide')}
+
+/* ---------- avvio ---------- */
+jsonp({action:'config'}).then(r=>{
+  $('loading').classList.add('hide');
+  const c=r.config||{};
+  if(c.header_img){const im=$('hdrImg');im.src=c.header_img;im.alt=c.titolo||'';im.classList.remove('hide');$('title').classList.add('hide');$('kicker').classList.add('hide')}
+  $('title').textContent=c.titolo||'Nightmarket';$('kicker').textContent=c.sottotitolo||'';
+  $('date').textContent=c.data_testo||'';
+  $('intro').textContent=(c.intro||'')+(c.secret?'\nIl luogo lo scopri solo dopo il pagamento.':'');
+  if(!c.secret){
+    $('revTxt').textContent='Dopo il pagamento ti mostra il biglietto e tutte le info per la serata.';
+    if(c.location_nome){$('whereName').textContent=c.location_nome;$('where').classList.remove('hide')}
+    if(/^https?:\/\//i.test(c.location_maps||'')){$('whereMaps').href=c.location_maps;$('whereMaps').classList.remove('hide');$('where').classList.remove('hide')}
+  }
+  $('pVal').textContent=c.prezzo_testo||'';$('pInc').textContent=c.include_testo||'';$('price').classList.remove('hide');
+  if(!c.aperte){showClosed(c.messaggio_completo);return}
+  F.classList.remove('hide');
+}).catch(()=>{$('loading').textContent='Impossibile caricare la pagina, riprova tra poco.'});
+</script>
+</body>
+</html>
