@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Nightmarket — Cassa</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#121110">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121110;--card:#1c1a17;--line:#302c27;--txt:#f6f1e7;--mut:#9d968b;--green:#1f8a4c;--green2:#2fb565;--red:#d7322b;--tag:#ffd84a;--err:#ff5a4a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 Inter,system-ui,sans-serif;-webkit-user-select:none;user-select:none}
+.wrap{max-width:720px;margin:0 auto;padding:12px 14px 30px}
+.disp{font-family:'Lilita One',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-weight:400}
+.hide{display:none!important}
+.mut{color:var(--mut);font-size:13px}
+input,select{width:100%;font:16px Inter,sans-serif;color:var(--txt);background:#141311;border:1px solid var(--line);border-radius:10px;padding:12px;-webkit-user-select:text;user-select:text}
+.btn{display:block;width:100%;padding:16px;border-radius:12px;border:0;background:var(--green);color:#fff;font-family:'Lilita One',Impact,sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:.03em;box-shadow:0 4px 0 #13552f;cursor:pointer}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #13552f}
+.btn[disabled]{opacity:.4}
+.btn.ghost{background:var(--card);border:1px solid var(--line);box-shadow:none;font-size:16px;padding:12px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.top .disp{font-size:24px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:14px;font-weight:600}
+.tabs button.on{background:var(--tag);color:#141414;border-color:var(--tag)}
+.net{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
+.net.warn{background:var(--red);border-color:var(--red);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;position:relative;cursor:pointer}
+.prod:active{background:#26231f}
+.prod .n{font-family:'Lilita One',Impact,sans-serif;font-size:21px;text-transform:uppercase;line-height:1.05}
+.prod .p{color:var(--tag);font-weight:700;margin-top:4px}
+.prod .q{position:absolute;top:-8px;right:-6px;min-width:32px;height:32px;border-radius:16px;background:var(--red);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;padding:0 8px}
+.prod .minus{position:absolute;bottom:6px;left:6px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#141311;color:var(--txt);font-size:20px;line-height:1}
+.cart{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.tot{display:flex;justify-content:space-between;align-items:baseline}
+.tot .v{font-family:'Lilita One',Impact,sans-serif;font-size:46px;color:var(--tag);line-height:1}
+.met{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:12px 0}
+.met button{padding:14px 6px;border-radius:10px;border:1px solid var(--line);background:#141311;color:var(--txt);font-size:15px;font-weight:700}
+.met button.on{background:var(--txt);color:#141414;border-color:var(--txt)}
+.cash{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.cash button{padding:10px 4px;border-radius:10px;border:1px solid var(--line);background:#141311;color:var(--txt);font-weight:700}
+.cash button.on{border-color:var(--tag);color:var(--tag)}
+.resto{text-align:center;font-size:18px;margin:6px 0 10px}
+.resto b{font-family:'Lilita One',Impact,sans-serif;font-size:30px;color:var(--green2);font-weight:400}
+.row{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line);align-items:center}
+.row:first-child{border-top:0}
+.row.void{opacity:.4;text-decoration:line-through}
+.row button{padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:#141311;color:var(--txt);font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.kpi div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.kpi b{display:block;font-size:20px}
+.kpi span{font-size:11px;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 4px;border-top:1px solid var(--line);text-align:right}
+td:first-child,th:first-child{text-align:left}
+th{color:var(--mut);font-weight:500;font-size:12px;border-top:0}
+h3{margin:0 0 8px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--green2)}
+#toast{position:fixed;left:14px;right:14px;top:14px;max-width:520px;margin:0 auto;padding:14px;border-radius:12px;background:var(--green2);color:#08240f;font-weight:700;text-align:center;display:none;z-index:20;font-size:16px}
+#toast.err{background:var(--err);color:#fff}
+#toast.warn{background:var(--tag);color:#141414}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login">
+    <div class="disp" style="font-size:34px;margin:30px 0 4px">Cassa token</div>
+    <p class="mut">Inserisci il PIN della cassa e il tuo nome.</p>
+    <input id="op" placeholder="Il tuo nome (es. Angelo)" style="margin-bottom:8px" autocomplete="off">
+    <input id="pin" type="password" inputmode="numeric" placeholder="PIN" style="margin-bottom:10px">
+    <button class="btn" id="loginBtn">Apri cassa</button>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="top">
+      <div><div class="disp" id="ttl">Nightmarket</div><div class="mut" id="who"></div></div>
+      <span class="net" id="net">online</span>
+    </div>
+    <div class="tabs">
+      <button data-t="sell" class="on">Vendi</button>
+      <button data-t="last">Ultime</button>
+      <button data-t="sum">Riepilogo</button>
+    </div>
+
+    <section id="t-sell">
+      <div class="grid" id="grid"></div>
+      <div class="cart">
+        <div class="tot"><span class="mut" id="pz">0 token</span><span class="v" id="totV">0 €</span></div>
+        <div class="met">
+          <button data-m="Contanti" class="on">💵 Contanti</button>
+          <button data-m="POS">💳 POS</button>
+          <button data-m="Omaggio">🎁 Omaggio</button>
+        </div>
+        <div id="cashBox">
+          <div class="mut" style="margin-bottom:6px">Ricevuti (per il resto)</div>
+          <div class="cash" id="cash"></div>
+          <div class="resto hide" id="resto"></div>
+        </div>
+        <button class="btn" id="saveBtn" disabled>Registra vendita</button>
+        <button class="btn ghost" id="clearBtn" style="margin-top:8px">Svuota</button>
+      </div>
+    </section>
+
+    <section id="t-last" class="hide">
+      <button class="btn ghost" id="lastReload" style="margin-bottom:10px">↻ Aggiorna</button>
+      <div class="card" id="lastList"><div class="mut">Caricamento…</div></div>
+    </section>
+
+    <section id="t-sum" class="hide">
+      <button class="btn ghost" id="sumReload" style="margin-bottom:10px">↻ Aggiorna</button>
+      <div id="sumBox"><div class="mut">Caricamento…</div></div>
+      <button class="btn ghost" id="listReload" style="margin-top:6px">↻ Ricarica listino</button>
+      <button class="btn ghost" id="logout" style="margin-top:6px">Esci</button>
+    </section>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ===== URL DELLO SCRIPT ===== */
+const API = 'https://script.google.com/macros/s/AKfycbyYH1y6zGMHO6tlKPegakduF2d_0aRHqBU2YQst9La7UcA9rQZfthO1uh7rx4bshhs/exec';
+
+function jsonp(params){return new Promise((res,rej)=>{const cb='cb'+Date.now()+Math.floor(Math.random()*1e5);const s=document.createElement('script');const t=setTimeout(()=>{c();rej(new Error('timeout'))},20000);function c(){clearTimeout(t);delete window[cb];s.remove()}window[cb]=d=>{c();res(d)};params.callback=cb;s.src=API+'?'+new URLSearchParams(params);s.onerror=()=>{c();rej(new Error('rete'))};document.body.appendChild(s)})}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>(Math.round(n*100)/100).toLocaleString('it-IT',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})+' €';
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let PIN='',OP='',LIST=[],cart={},metodo='Contanti',ricevuti=0;
+function toast(m,k){const t=$('toast');t.textContent=m;t.className=k||'';t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',k==='err'?3500:1500)}
+function api(p){p.pin=PIN;return jsonp(p)}
+
+/* ---------- login ---------- */
+$('op').value=LS.get('nm_op','');
+async function login(pin,op){
+  if(!op){toast('Scrivi il tuo nome','err');return}
+  $('loginBtn').disabled=true;
+  try{const r=await jsonp({action:'cassa_login',pin});
+    if(!r.ok){toast(r.error||'PIN errato','err');return}
+    PIN=pin;OP=op;LS.set('nm_op',op);try{sessionStorage.setItem('nm_cpin',pin)}catch(e){}
+    LIST=r.listino;LS.set('nm_list',LIST);$('ttl').textContent=(r.titolo||'Nightmarket')+' · cassa';$('who').textContent='Operatore: '+op;
+    $('login').classList.add('hide');$('app').classList.remove('hide');renderGrid();flush();
+  }catch(e){
+    const cached=LS.get('nm_list',null);
+    if(cached&&pin===LS.get('nm_lastpin','')){PIN=pin;OP=op;LIST=cached;$('who').textContent='Operatore: '+op+' (offline)';$('login').classList.add('hide');$('app').classList.remove('hide');renderGrid();toast('Offline: le vendite verranno inviate appena torna la rete','warn')}
+    else toast('Connessione assente','err');
+  }finally{$('loginBtn').disabled=false;LS.set('nm_lastpin',PIN||LS.get('nm_lastpin',''))}
+}
+$('loginBtn').onclick=()=>login($('pin').value.trim(),$('op').value.trim());
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
+try{const s=sessionStorage.getItem('nm_cpin');if(s&&$('op').value)login(s,$('op').value)}catch(e){}
+$('logout').onclick=()=>{try{sessionStorage.removeItem('nm_cpin')}catch(e){}location.reload()};
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['sell','last','sum'].forEach(t=>$('t-'+t).classList.toggle('hide',t!==b.dataset.t));
+  if(b.dataset.t==='last')loadLast();if(b.dataset.t==='sum')loadSum();
+});
+
+/* ---------- vendita ---------- */
+function renderGrid(){
+  $('grid').innerHTML=LIST.map((p,i)=>'<div class="prod" data-i="'+i+'"><div class="n">'+esc(p.nome)+'</div><div class="p">'+eur(p.prezzo)+'</div>'+(cart[p.nome]?'<div class="q">'+cart[p.nome]+'</div><button class="minus" data-m="'+i+'">−</button>':'')+'</div>').join('')||'<p class="mut">Listino vuoto: impostalo dal backoffice.</p>';
+  const pz=Object.values(cart).reduce((a,b)=>a+b,0);
+  const tot=metodo==='Omaggio'?0:total();
+  $('pz').textContent=pz+(pz===1?' token':' token')+(metodo==='Omaggio'&&pz?' · omaggio':'');
+  $('totV').textContent=eur(tot);
+  $('saveBtn').disabled=!pz;
+  $('cashBox').classList.toggle('hide',metodo!=='Contanti');
+  const cuts=[...new Set([Math.ceil(tot/5)*5,Math.ceil(tot/10)*10,20,50].filter(v=>v>=tot&&v>0))].sort((a,b)=>a-b).slice(0,4);
+  $('cash').innerHTML=cuts.map(v=>'<button data-c="'+v+'" class="'+(ricevuti===v?'on':'')+'">'+v+' €</button>').join('');
+  if(ricevuti&&ricevuti>=tot&&metodo==='Contanti'){$('resto').innerHTML='Resto: <b>'+eur(ricevuti-tot)+'</b>';$('resto').classList.remove('hide')}else $('resto').classList.add('hide');
+}
+function total(){return LIST.reduce((a,p)=>a+(cart[p.nome]||0)*p.prezzo,0)}
+$('grid').addEventListener('click',e=>{
+  const m=e.target.closest('[data-m]');
+  if(m){e.stopPropagation();const p=LIST[+m.dataset.m];cart[p.nome]--;if(cart[p.nome]<=0)delete cart[p.nome];ricevuti=0;renderGrid();return}
+  const c=e.target.closest('.prod');if(!c)return;
+  const p=LIST[+c.dataset.i];cart[p.nome]=(cart[p.nome]||0)+1;ricevuti=0;renderGrid();
+});
+document.querySelectorAll('.met button').forEach(b=>b.onclick=()=>{metodo=b.dataset.m;document.querySelectorAll('.met button').forEach(x=>x.classList.toggle('on',x===b));ricevuti=0;renderGrid()});
+$('cash').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;ricevuti=+b.dataset.c;renderGrid()});
+$('clearBtn').onclick=()=>{cart={};ricevuti=0;renderGrid()};
+
+/* coda: ogni vendita ha un ID unico, se la rete cade resta in coda e riparte da sola */
+function queue(){return LS.get('nm_queue',[])}
+function setNet(){const q=queue().length;$('net').textContent=q?q+' da inviare':'online';$('net').classList.toggle('warn',!!q)}
+$('saveBtn').onclick=()=>{
+  const items=LIST.filter(p=>cart[p.nome]).map(p=>({n:p.nome,q:cart[p.nome],pz:p.prezzo}));
+  if(!items.length)return;
+  const sale={uid:'V'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),op:OP,metodo,items:JSON.stringify(items)};
+  const q=queue();q.push(sale);LS.set('nm_queue',q);
+  const tot=metodo==='Omaggio'?0:total();
+  toast('✓ '+(metodo==='Omaggio'?'Omaggio registrato':eur(tot)+' · '+metodo));
+  cart={};ricevuti=0;renderGrid();flush();
+};
+let flushing=false;
+async function flush(){
+  setNet();if(flushing)return;flushing=true;
+  try{
+    let q=queue();
+    while(q.length){
+      const s=q[0];
+      const r=await api({action:'cassa_sale',...s});
+      if(!r.ok){toast('Errore: '+r.error,'err');break}
+      q=queue().filter(x=>x.uid!==s.uid);LS.set('nm_queue',q);setNet();
+    }
+  }catch(e){}finally{flushing=false;setNet()}
+}
+setInterval(flush,15000);window.addEventListener('online',flush);
+
+/* ---------- ultime ---------- */
+async function loadLast(){
+  await flush();
+  try{const r=await api({action:'cassa_recent'});if(!r.ok){toast(r.error,'err');return}
+    $('lastList').innerHTML=r.rows.map(v=>'<div class="row'+(v.annullata?' void':'')+'"><div><b>'+eur(v.tot)+'</b> · '+esc(v.metodo)+'<div class="mut">'+esc(v.ora)+' · '+esc(v.op)+' · '+esc(v.dett)+'</div></div><button data-v="'+esc(v.id)+'" data-u="'+(v.annullata?1:0)+'">'+(v.annullata?'Ripristina':'Annulla')+'</button></div>').join('')||'<div class="mut">Nessuna vendita</div>';
+  }catch(e){$('lastList').innerHTML='<div class="mut">Offline</div>'}
+}
+$('lastReload').onclick=loadLast;
+$('lastList').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-v]');if(!b)return;
+  if(!confirm(b.dataset.u==='1'?'Ripristinare questa vendita?':'Annullare questa vendita?'))return;
+  try{const r=await api({action:'cassa_void',id:b.dataset.v,undo:b.dataset.u});if(!r.ok){toast(r.error,'err');return}loadLast()}catch(e){toast('Offline','err')}
+});
+
+/* ---------- riepilogo ---------- */
+async function loadSum(){
+  await flush();
+  try{const r=await api({action:'cassa_summary'});if(!r.ok){toast(r.error,'err');return}
+    let h='<div class="kpi"><div><b>'+eur(r.totale)+'</b><span>incasso</span></div><div><b>'+eur(r.metodi.Contanti||0)+'</b><span>contanti</span></div><div><b>'+eur(r.metodi.POS||0)+'</b><span>POS</span></div></div>';
+    h+='<div class="card"><h3>Token per tipo</h3><table><tr><th>Tipo</th><th>Venduti</th><th>Omaggio</th><th>€</th></tr>';
+    Object.keys(r.prodotti).forEach(k=>{const p=r.prodotti[k];h+='<tr><td>'+esc(k)+'</td><td>'+p.venduti+'</td><td>'+p.omaggio+'</td><td>'+eur(p.euro)+'</td></tr>'});
+    h+='</table></div><div class="card"><h3>Per operatore</h3><table>';
+    Object.keys(r.operatori).forEach(k=>{h+='<tr><td>'+esc(k)+'</td><td>'+eur(r.operatori[k])+'</td></tr>'});
+    h+='</table></div><p class="mut">'+r.vendite+' vendite registrate'+(r.annullate?' · '+r.annullate+' annullate (escluse)':'')+'</p>';
+    $('sumBox').innerHTML=h;
+  }catch(e){$('sumBox').innerHTML='<div class="mut">Offline</div>'}
+}
+$('sumReload').onclick=loadSum;
+$('listReload').onclick=async()=>{try{const r=await api({action:'cassa_login'});if(r.ok){LIST=r.listino;LS.set('nm_list',LIST);cart={};renderGrid();toast('Listino aggiornato')}}catch(e){toast('Offline','err')}};
+</script>
+</body>
+</html>

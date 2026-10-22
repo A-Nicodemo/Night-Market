@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nightmarket — Backoffice</title>
+<meta name="robots" content="noindex">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--bg:#121110;--card:#1c1a17;--line:#302c27;--txt:#f6f1e7;--mut:#9d968b;--acc:#ffd84a;--err:#ff5a4a;--ok:#2fb565}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 system-ui,-apple-system,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 80px}
+h1{font-size:20px;margin:4px 0 14px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.tabs button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:14px}
+.tabs button.on{background:var(--acc);color:#000;border-color:var(--acc);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:11px;color:var(--mut)}
+input,select,textarea{width:100%;font:16px system-ui,sans-serif;color:var(--txt);background:#0f1110;border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:70px;resize:vertical}
+.bar{display:grid;grid-template-columns:1fr 130px;gap:6px;margin-bottom:10px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.item .top{display:flex;justify-content:space-between;gap:8px}
+.item .nm{font-weight:700}
+.mut{color:var(--mut);font-size:13px}
+.note{font-size:13px;color:#ffd27a;margin-top:4px}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.acts button,.acts a{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0f1110;color:var(--txt);font-size:13px;text-decoration:none}
+.acts .paid{background:var(--ok);color:#000;border-color:var(--ok)}
+.acts .in{background:var(--acc);color:#000;border-color:var(--acc)}
+.pill{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);white-space:nowrap;height:max-content}
+.pill.p{background:var(--ok);color:#000;border-color:var(--ok)}
+.pill.i{background:var(--acc);color:#000;border-color:var(--acc)}
+.btn{display:block;width:100%;padding:14px;border-radius:12px;border:0;background:var(--acc);color:#000;font-size:16px;font-weight:700;margin-top:10px}
+.btn.ghost{background:var(--card);color:var(--txt);border:1px solid var(--line)}
+label.f{display:block;margin-bottom:12px}
+label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.hint{font-size:12px;color:var(--mut);margin-top:3px}
+.hide{display:none}
+#toast{position:fixed;left:16px;right:16px;bottom:16px;max-width:520px;margin:0 auto;padding:14px;border-radius:12px;background:#fff;color:#000;font-weight:600;text-align:center;display:none;z-index:20}
+#toast.err{background:var(--err);color:#fff}
+#toast.ok{background:var(--ok)}
+#reader{border-radius:12px;overflow:hidden;margin-bottom:10px}
+.sec{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin:22px 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login">
+    <h1>Backoffice Nightmarket</h1>
+    <input id="pin" type="password" inputmode="numeric" placeholder="PIN">
+    <button class="btn" id="loginBtn">Entra</button>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="tabs">
+      <button data-t="list" class="on">Iscritti</button>
+      <button data-t="door">Ingresso</button>
+      <button data-t="cfg">Impostazioni</button>
+    </div>
+
+    <section id="t-list">
+      <div class="stats">
+        <div class="stat"><b id="sIsc">0</b><span>iscritti</span></div>
+        <div class="stat"><b id="sPag">0</b><span>pagati</span></div>
+        <div class="stat"><b id="sIn">0</b><span>entrati</span></div>
+        <div class="stat"><b id="sEur">0€</b><span>incasso</span></div>
+      </div>
+      <div class="bar">
+        <input id="q" placeholder="Cerca nome, ID, telefono…">
+        <select id="flt"><option value="">Tutti</option><option value="np">Da pagare</option><option value="p">Pagati</option><option value="in">Entrati</option></select>
+      </div>
+      <button class="btn ghost" id="reload" style="margin:0 0 10px">↻ Aggiorna</button>
+      <div id="list"></div>
+    </section>
+
+    <section id="t-door" class="hide">
+      <button class="btn" id="scanBtn">Scansiona biglietto</button>
+      <div id="reader" style="margin-top:10px"></div>
+      <div class="sec">Oppure cerca</div>
+      <input id="q2" placeholder="Nome, cognome o ID">
+      <div id="list2" style="margin-top:10px"></div>
+    </section>
+
+    <section id="t-cfg" class="hide">
+      <div id="cfgForm"></div>
+      <button class="btn" id="saveCfg">Salva impostazioni</button>
+    </section>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ===== INCOLLA QUI L'URL /exec DELLO SCRIPT ===== */
+const API = 'https://script.google.com/macros/s/AKfycbyYH1y6zGMHO6tlKPegakduF2d_0aRHqBU2YQst9La7UcA9rQZfthO1uh7rx4bshhs/exec';
+
+function jsonp(params){return new Promise((res,rej)=>{const cb='cb'+Date.now()+Math.floor(Math.random()*1e4);const s=document.createElement('script');const t=setTimeout(()=>{c();rej(new Error('timeout'))},30000);function c(){clearTimeout(t);delete window[cb];s.remove()}window[cb]=d=>{c();res(d)};params.callback=cb;s.src=API+'?'+new URLSearchParams(params);s.onerror=()=>{c();rej(new Error('rete'))};document.body.appendChild(s)})}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let PINV='',DATA={rows:[]};
+function toast(m,k){const t=$('toast');t.textContent=m;t.className=k||'';t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',k==='err'?4000:2200)}
+function api(p){p.pin=PINV;return jsonp(p)}
+
+/* ---------- login ---------- */
+async function login(pin){
+  try{const r=await jsonp({action:'admin_login',pin});
+    if(!r.ok){toast('PIN errato','err');return}
+    PINV=pin;try{sessionStorage.setItem('grpin',pin)}catch(e){}
+    $('login').classList.add('hide');$('app').classList.remove('hide');load();loadCfg();
+  }catch(e){toast('Connessione assente','err')}
+}
+$('loginBtn').onclick=()=>login($('pin').value.trim());
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')login($('pin').value.trim())});
+try{const s=sessionStorage.getItem('grpin');if(s)login(s)}catch(e){}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['list','door','cfg'].forEach(t=>$('t-'+t).classList.toggle('hide',t!==b.dataset.t));
+  if(b.dataset.t!=='door')stopScan();
+});
+
+/* ---------- lista ---------- */
+async function load(){
+  try{const r=await api({action:'admin_list'});if(!r.ok){toast(r.error,'err');return}DATA=r;render();renderDoor()}
+  catch(e){toast('Errore di caricamento','err')}
+}
+$('reload').onclick=load;
+$('q').oninput=render;$('flt').onchange=render;$('q2').oninput=renderDoor;
+
+function revealUrl(p){const u=new URL('reveal.html',location.href);u.searchParams.set('id',p.id);u.searchParams.set('t',p.token);return u.href}
+function waLink(p){
+  let n=p.tel.replace(/\D/g,'');if(n.startsWith('00'))n=n.slice(2);else if(!p.tel.trim().startsWith('+')&&n.length<=10)n='39'+n;
+  let msg='Ciao '+p.nome+'! Grazie per esserti registrato a '+(DATA.titolo||'Nightmarket')+'.';
+  if(!p.pagato&&DATA.stripe_link)msg+='\nPer confermare il posto paga qui: '+DATA.stripe_link+(DATA.stripe_link.includes('?')?'&':'?')+'client_reference_id='+p.id;
+  msg+='\nIl tuo link personale (dopo il pagamento '+(DATA.secret?'svela il luogo e il biglietto':'trovi il biglietto e le info')+'): '+revealUrl(p);
+  return 'https://wa.me/'+n+'?text='+encodeURIComponent(msg);
+}
+function match(p,q){q=q.toLowerCase();return !q||(p.nome+' '+p.cognome+' '+p.cognome+' '+p.nome+' '+p.id+' '+p.tel+' '+p.email+' '+p.ig).toLowerCase().includes(q)}
+function card(p,door){
+  let h='<div class="item"><div class="top"><div><div class="nm">'+esc(p.nome)+' '+esc(p.cognome)+'</div><div class="mut">'+esc(p.id)+' · '+esc(p.tel)+'</div>';
+  if(!door)h+='<div class="mut"><a style="color:inherit" href="mailto:'+esc(p.email)+'">'+esc(p.email)+'</a>'+(p.ig?' · <a style="color:inherit" target="_blank" rel="noopener" href="https://instagram.com/'+encodeURIComponent(p.ig)+'">@'+esc(p.ig)+'</a>':'')+'</div><div class="mut">'+esc(p.cf)+' · registrato '+esc(p.data)+'</div>';
+  if(p.note)h+='<div class="note">⚠ '+esc(p.note)+'</div>';
+  h+='</div><div>'+(p.ingresso?'<span class="pill i">entrato '+esc(p.ora_ingresso)+'</span>':p.pagato?'<span class="pill p">pagato</span>':'<span class="pill">da pagare</span>')+'</div></div><div class="acts">';
+  h+='<button class="'+(p.pagato?'paid':'')+'" data-a="pagato" data-id="'+esc(p.id)+'">'+(p.pagato?'✓ Pagato':'Segna pagato')+'</button>';
+  h+='<button class="'+(p.ingresso?'in':'')+'" data-a="ingresso" data-id="'+esc(p.id)+'">'+(p.ingresso?'✓ Entrato':'Segna ingresso')+'</button>';
+  if(!door){h+='<a href="'+waLink(p)+'" target="_blank" rel="noopener">WhatsApp</a><button data-a="copy" data-id="'+esc(p.id)+'">Copia link</button>'}
+  return h+'</div></div>';
+}
+function render(){
+  const rows=DATA.rows||[];
+  const pag=rows.filter(r=>r.pagato).length;
+  $('sIsc').textContent=rows.length+(DATA.capienza?'/'+DATA.capienza:'');
+  $('sPag').textContent=pag;$('sIn').textContent=rows.filter(r=>r.ingresso).length;
+  $('sEur').textContent=Math.round(pag*(DATA.prezzo||0))+'€';
+  const q=$('q').value.trim(),f=$('flt').value;
+  const vis=rows.filter(p=>match(p,q)&&(!f||(f==='p'&&p.pagato)||(f==='np'&&!p.pagato)||(f==='in'&&p.ingresso))).slice().reverse();
+  $('list').innerHTML=vis.map(p=>card(p,false)).join('')||'<p class="mut">Nessun risultato</p>';
+}
+function renderDoor(){
+  const q=$('q2').value.trim();
+  $('list2').innerHTML=q.length<2?'':(DATA.rows||[]).filter(p=>match(p,q)).slice(0,20).map(p=>card(p,true)).join('')||'<p class="mut">Nessun risultato</p>';
+}
+
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-a]');if(!b)return;
+  const p=(DATA.rows||[]).find(r=>r.id===b.dataset.id);if(!p)return;
+  const a=b.dataset.a;
+  if(a==='copy'){const u=revealUrl(p);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Link copiato','ok')).catch(()=>prompt('Copia:',u));return}
+  await toggle(p,a);
+});
+
+async function toggle(p,field,forceOn){
+  const cur=p[field];const val=forceOn?true:!cur;
+  if(!val&&!confirm('Annullare "'+field+'" per '+p.nome+' '+p.cognome+'?'))return;
+  if(field==='ingresso'&&val&&!p.pagato&&!confirm(p.nome+' '+p.cognome+' NON risulta pagato. Far entrare comunque?'))return;
+  try{
+    const r=await api({action:'admin_set',id:p.id,field,value:val?'1':'0'});
+    if(!r.ok){toast(r.error,'err');return}
+    p[field]=val;if(field==='ingresso')p.ora_ingresso=r.time;else p.data_pag=r.time;
+    render();renderDoor();
+    toast(field==='ingresso'?(val?'✓ '+p.nome+' entrato':'Ingresso annullato'):(val?'✓ Pagamento segnato':'Pagamento annullato'),val?'ok':'');
+  }catch(e){toast('Errore di rete, riprova','err')}
+}
+
+/* ---------- scanner ---------- */
+let scanner=null,busy=false;
+$('scanBtn').onclick=()=>{if(scanner){stopScan();return}
+  scanner=new Html5Qrcode('reader');$('scanBtn').textContent='Ferma scanner';
+  scanner.start({facingMode:'environment'},{fps:10,qrbox:230},onScan).catch(()=>{toast('Fotocamera non disponibile','err');stopScan()});
+};
+function stopScan(){if(scanner){scanner.stop().catch(()=>{}).finally(()=>{try{scanner.clear()}catch(e){}scanner=null});}$('scanBtn').textContent='Scansiona biglietto'}
+async function onScan(txt){
+  if(busy)return;busy=true;
+  try{
+    const [pre,id,t]=String(txt).split('|');
+    const p=(DATA.rows||[]).find(r=>r.id===id);
+    if(pre!=='NM'||!p||p.token!==t){toast('Biglietto non valido','err');return}
+    if(p.ingresso){toast('⚠ '+p.nome+' '+p.cognome+' GIÀ ENTRATO alle '+p.ora_ingresso,'err');return}
+    if(!p.pagato){toast('⚠ '+p.nome+' '+p.cognome+' NON PAGATO','err');return}
+    await toggle(p,'ingresso',true);
+  }finally{setTimeout(()=>busy=false,2500)}
+}
+
+/* ---------- impostazioni ---------- */
+const FIELDS=[
+  ['sec','Pagina di prenotazione'],
+  ['aperte','Prenotazioni aperte','sel'],
+  ['capienza','Capienza massima (0 = nessun limite, non visibile al pubblico)'],
+  ['titolo','Titolo'],['sottotitolo','Sopratitolo'],['data_testo','Data e ora (testo)'],
+  ['intro','Testo introduttivo','ta'],
+  ['header_img','Immagine header (URL, lascia vuoto per titolo testuale)'],
+  ['prezzo','Prezzo (numero, per il conteggio incassi)'],['prezzo_testo','Prezzo (testo mostrato)'],['include_testo','Cosa include'],
+  ['stripe_link','Link di pagamento Stripe'],
+  ['messaggio_completo','Messaggio quando è al completo','ta'],
+  ['sec','Location'],
+  ['secret_location','Location segreta (svelata solo dopo il pagamento)','sel'],
+  ['location_nome','Nome / indirizzo location','','Se la location NON è segreta, viene mostrata anche nella pagina pubblica'],['location_maps','Link Google Maps location'],
+  ['sec','Pagina personale (solo paganti)'],
+  ['parcheggi','Parcheggi, uno per riga: Nome | link Maps | nota','ta','Es: Piazza Garibaldi | https://maps.app.goo.gl/... | gratuito, 5 min a piedi'],
+  ['ingresso_istruzioni','Istruzioni per entrare','ta'],
+  ['parola_ordine','Parola d\'ordine'],
+  ['contatto_tel','Telefono di riferimento per la serata'],
+  ['sec','Cassa token'],
+  ['listino','Listino token, uno per riga: Nome | prezzo','ta','Es: Drink | 7. Dopo aver salvato, in cassa premi ↻ per ricaricare il listino']
+];
+async function loadCfg(){
+  try{const r=await api({action:'admin_config_get'});if(!r.ok)return;
+    let h='';FIELDS.forEach(f=>{
+      if(f[0]==='sec'){h+='<div class="sec">'+f[1]+'</div>';return}
+      const v=esc(r.config[f[0]]||'');
+      h+='<label class="f"><span>'+f[1]+'</span>';
+      if(f[2]==='ta')h+='<textarea data-k="'+f[0]+'">'+v+'</textarea>';
+      else if(f[2]==='sel')h+='<select data-k="'+f[0]+'"><option value="SI"'+(v==='SI'?' selected':'')+'>Sì</option><option value="NO"'+(v==='NO'?' selected':'')+'>No</option></select>';
+      else h+='<input data-k="'+f[0]+'" value="'+v+'">';
+      if(f[3])h+='<div class="hint">'+esc(f[3])+'</div>';
+      h+='</label>';
+    });
+    $('cfgForm').innerHTML=h;
+  }catch(e){toast('Errore caricamento impostazioni','err')}
+}
+$('saveCfg').onclick=async()=>{
+  const o={};document.querySelectorAll('#cfgForm [data-k]').forEach(el=>o[el.dataset.k]=el.value);
+  try{const r=await api({action:'admin_config_save',cfg:JSON.stringify(o)});toast(r.ok?'Salvato ✓':r.error,r.ok?'ok':'err');if(r.ok)load()}
+  catch(e){toast('Errore di rete','err')}
+};
+</script>
+</body>
+</html>
