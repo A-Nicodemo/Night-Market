@@ -75,9 +75,9 @@ else jsonp({action:'reveal',id,t}).then(r=>{
   document.getElementById('date').textContent=r.data_testo||'';
 
   if(!r.pagato){
-    let h='<div class="card"><h2>Ciao '+esc(r.nome)+'</h2><p>La tua prenotazione <b>'+esc(r.id)+'</b> è registrata, ma il pagamento non risulta ancora confermato.</p>';
+    let h='<div class="card"><h2>Ciao '+esc(r.nome)+'</h2><p>Manca solo il pagamento per confermare il tuo posto.</p>';
     if(r.stripe_link){const u=r.stripe_link+(r.stripe_link.includes('?')?'&':'?')+'client_reference_id='+encodeURIComponent(r.id);h+='<a class="btn" href="'+safeUrl(u)+'" target="_blank" rel="noopener">Paga '+esc(r.prezzo_testo)+'</a>'}
-    h+='<p class="mut" style="margin-top:14px">Se hai già pagato, la conferma può richiedere un po\' di tempo: ricarica questa pagina più tardi. '+(r.secret?'Il luogo si svela qui.':'Qui troverai il tuo biglietto.')+'</p></div>';
+    h+='<p class="mut" style="margin-top:14px">'+(r.secret?'Appena completato, qui si svela il luogo con il tuo biglietto.':'Appena completato, qui trovi il tuo biglietto.')+'</p></div>';
     if(!r.secret&&(r.location_nome||safeUrl(r.location_maps))){h+='<div class="card"><h2>Dove</h2>'+(r.location_nome?'<div class="big">'+esc(r.location_nome)+'</div>':'')+(safeUrl(r.location_maps)?'<a class="btn ghost" href="'+safeUrl(r.location_maps)+'" target="_blank" rel="noopener">Apri in Maps</a>':'')+'</div>'}
     out.innerHTML=h;return;
   }

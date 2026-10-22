@@ -114,17 +114,8 @@ footer{text-align:center;color:var(--mut);font-size:12px;margin-top:40px}
   </form>
 
   <div id="done" class="card hide">
-    <h2>Sei nel carrello. Quasi.</h2>
-    <p>Prenotazione <b id="dId"></b> registrata.</p>
-    <div id="payBlock">
-      <p>Completa il pagamento per confermare il posto:</p>
-      <a class="btn" id="payBtn" target="_blank" rel="noopener">Paga ora</a>
-    </div>
-    <p id="payLater" class="hide">Ti mandiamo a breve il link per il pagamento.</p>
-    <p style="margin-top:22px">Questo è il <b>tuo link personale</b>. <span id="revTxt">Dopo il pagamento ti svela dove andare, come entrare e il tuo biglietto.</span> Salvalo:</p>
-    <div class="box" id="revLink"></div>
-    <button class="btn ghost" id="copyBtn" type="button">Copia link</button>
-    <a class="btn ghost" id="revBtn">Apri il mio link</a>
+    <h2>Registrazione ricevuta</h2>
+    <p>Grazie! A breve ti scriviamo su WhatsApp con il link per il pagamento.</p>
   </div>
 
 
@@ -150,6 +141,7 @@ function jsonp(params){
 }
 const $=id=>document.getElementById(id);
 const F=$('form');
+let leaving=false;
 
 /* ---------- comuni + stati esteri ---------- */
 const ESTERI={"ALBANIA":"Z100","ARGENTINA":"Z600","AUSTRIA":"Z102","BELGIO":"Z103","BRASILE":"Z602","CANADA":"Z401","CINA":"Z210","FRANCIA":"Z110","GERMANIA":"Z112","GRECIA":"Z115","MAROCCO":"Z330","PAESI BASSI":"Z126","POLONIA":"Z127","REGNO UNITO":"Z114","ROMANIA":"Z129","RUSSIA":"Z154","SPAGNA":"Z131","STATI UNITI":"Z404","SVIZZERA":"Z133","TUNISIA":"Z352","UCRAINA":"Z138","VENEZUELA":"Z614"};
@@ -215,23 +207,16 @@ F.addEventListener('submit',async ev=>{
       if(r.full){showClosed(r.error);return}
       $('err').textContent=r.error||'Errore, riprova';return;
     }
-    showDone(r,e.email.value.trim());
+    if(r.stripe_link){
+      const u=r.stripe_link+(r.stripe_link.includes('?')?'&':'?')+'client_reference_id='+encodeURIComponent(r.id)+'&prefilled_email='+encodeURIComponent(e.email.value.trim());
+      leaving=true;location.href=u;return;
+    }
+    showDone();
   }catch(x){$('err').textContent='Connessione assente, riprova.'}
-  finally{b.disabled=false;b.textContent='Prenota'}
+  finally{if(!leaving){b.disabled=false;b.textContent='Prenota'}}
 });
 
-function showDone(r,email){
-  F.classList.add('hide');$('done').classList.remove('hide');
-  $('dId').textContent=r.id;
-  const rev=new URL('reveal.html',location.href);rev.searchParams.set('id',r.id);rev.searchParams.set('t',r.token);
-  $('revLink').textContent=rev.href;$('revBtn').href=rev.href;
-  if(r.stripe_link){
-    const u=r.stripe_link+(r.stripe_link.includes('?')?'&':'?')+'client_reference_id='+encodeURIComponent(r.id)+'&prefilled_email='+encodeURIComponent(email);
-    $('payBtn').href=u;
-  }else{$('payBlock').classList.add('hide');$('payLater').classList.remove('hide')}
-  window.scrollTo({top:$('done').offsetTop-20,behavior:'smooth'});
-}
-$('copyBtn').onclick=()=>{const t=$('revLink').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('copyBtn').textContent='Copiato ✓'}).catch(()=>{prompt('Copia il link:',t)})};
+function showDone(){F.classList.add('hide');$('done').classList.remove('hide');window.scrollTo({top:$('done').offsetTop-20,behavior:'smooth'})}
 
 function showClosed(msg){$('loading').classList.add('hide');F.classList.add('hide');$('closedMsg').textContent=msg;$('closed').classList.remove('hide')}
 
@@ -244,7 +229,6 @@ jsonp({action:'config'}).then(r=>{
   $('date').textContent=c.data_testo||'';
   $('intro').textContent=(c.intro||'')+(c.secret?'\nIl luogo lo scopri solo dopo il pagamento.':'');
   if(!c.secret){
-    $('revTxt').textContent='Dopo il pagamento ti mostra il biglietto e tutte le info per la serata.';
     if(c.location_nome){$('whereName').textContent=c.location_nome;$('where').classList.remove('hide')}
     if(/^https?:\/\//i.test(c.location_maps||'')){$('whereMaps').href=c.location_maps;$('whereMaps').classList.remove('hide');$('where').classList.remove('hide')}
   }

@@ -134,9 +134,13 @@ $('q').oninput=render;$('flt').onchange=render;$('q2').oninput=renderDoor;
 function revealUrl(p){const u=new URL('reveal.html',location.href);u.searchParams.set('id',p.id);u.searchParams.set('t',p.token);return u.href}
 function waLink(p){
   let n=p.tel.replace(/\D/g,'');if(n.startsWith('00'))n=n.slice(2);else if(!p.tel.trim().startsWith('+')&&n.length<=10)n='39'+n;
-  let msg='Ciao '+p.nome+'! Grazie per esserti registrato a '+(DATA.titolo||'Nightmarket')+'.';
-  if(!p.pagato&&DATA.stripe_link)msg+='\nPer confermare il posto paga qui: '+DATA.stripe_link+(DATA.stripe_link.includes('?')?'&':'?')+'client_reference_id='+p.id;
-  msg+='\nIl tuo link personale (dopo il pagamento '+(DATA.secret?'svela il luogo e il biglietto':'trovi il biglietto e le info')+'): '+revealUrl(p);
+  let msg;
+  if(p.pagato){
+    msg='Ciao '+p.nome+'! Pagamento ricevuto, sei dentro a '+(DATA.titolo||'Nightmarket')+' 🛒\nQui trovi '+(DATA.secret?'il luogo, come entrare e il tuo biglietto':'il tuo biglietto e tutte le info')+': '+revealUrl(p)+'\nSalvalo e mostralo all\'ingresso!';
+  }else{
+    msg='Ciao '+p.nome+'! Grazie per esserti registrato a '+(DATA.titolo||'Nightmarket')+'.';
+    if(DATA.stripe_link)msg+='\nPer confermare il posto paga qui: '+DATA.stripe_link+(DATA.stripe_link.includes('?')?'&':'?')+'client_reference_id='+p.id;
+  }
   return 'https://wa.me/'+n+'?text='+encodeURIComponent(msg);
 }
 function match(p,q){q=q.toLowerCase();return !q||(p.nome+' '+p.cognome+' '+p.cognome+' '+p.nome+' '+p.id+' '+p.tel+' '+p.email+' '+p.ig).toLowerCase().includes(q)}
