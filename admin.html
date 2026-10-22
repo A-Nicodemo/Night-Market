@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nightmarket — Backoffice</title>
 <meta name="robots" content="noindex">
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root{--bg:#121110;--card:#1c1a17;--line:#302c27;--txt:#f6f1e7;--mut:#9d968b;--acc:#ffd84a;--err:#ff5a4a;--ok:#2fb565}
 *{box-sizing:border-box}
@@ -13,7 +12,7 @@ html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 system-u
 .wrap{max-width:720px;margin:0 auto;padding:16px 16px 80px}
 h1{font-size:20px;margin:4px 0 14px}
 .tabs{display:flex;gap:6px;margin-bottom:14px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
-.tabs button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:14px}
+.tabs button{flex:1;padding:10px 4px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:14px}
 .tabs button.on{background:var(--acc);color:#000;border-color:var(--acc);font-weight:700}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
@@ -59,6 +58,7 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
     <div class="tabs">
       <button data-t="list" class="on">Iscritti</button>
       <button data-t="door">Ingresso</button>
+      <button data-t="nl">Newsletter</button>
       <button data-t="cfg">Impostazioni</button>
     </div>
 
@@ -78,11 +78,24 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
     </section>
 
     <section id="t-door" class="hide">
-      <button class="btn" id="scanBtn">Scansiona biglietto</button>
-      <div id="reader" style="margin-top:10px"></div>
-      <div class="sec">Oppure cerca</div>
-      <input id="q2" placeholder="Nome, cognome o ID">
+      <div class="stats" style="grid-template-columns:1fr 1fr"><div class="stat"><b id="dIn">0</b><span>entrati</span></div><div class="stat"><b id="dPag">0</b><span>paganti</span></div></div>
+      <input id="q2" placeholder="Cerca nome o cognome…">
+      <div class="mut" style="margin-top:6px">Elenco paganti in ordine di cognome. Cercando compaiono anche i non pagati.</div>
       <div id="list2" style="margin-top:10px"></div>
+    </section>
+
+    <section id="t-nl" class="hide">
+      <div class="mut" style="margin-bottom:12px">Email informativa ai paganti, sul modello di Supper Segreta. Dove, parcheggi, come entrare e telefono vengono presi da <b>Impostazioni</b>. Le sezioni vuote non compaiono.</div>
+      <div id="nlForm"></div>
+      <button class="btn ghost" id="nlSave">Salva testi</button>
+      <button class="btn ghost" id="nlPrev">Anteprima</button>
+      <iframe id="nlFrame" class="hide" style="width:100%;height:520px;border:0;border-radius:12px;background:#fff;margin-top:10px"></iframe>
+      <div class="sec">Prova</div>
+      <input id="nlTo" type="email" placeholder="La tua email per la prova">
+      <button class="btn ghost" id="nlTest">Invia prova a me</button>
+      <div class="sec">Invio</div>
+      <div class="mut" id="nlStat"></div>
+      <button class="btn" id="nlSend">Invia a tutti i paganti</button>
     </section>
 
     <section id="t-cfg" class="hide">
@@ -119,8 +132,8 @@ try{const s=sessionStorage.getItem('grpin');if(s)login(s)}catch(e){}
 /* ---------- tabs ---------- */
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['list','door','cfg'].forEach(t=>$('t-'+t).classList.toggle('hide',t!==b.dataset.t));
-  if(b.dataset.t!=='door')stopScan();
+  ['list','door','nl','cfg'].forEach(t=>$('t-'+t).classList.toggle('hide',t!==b.dataset.t));
+  if(b.dataset.t==='nl')nlStat();
 });
 
 /* ---------- lista ---------- */
@@ -146,6 +159,7 @@ function waLink(p){
 function match(p,q){q=q.toLowerCase();return !q||(p.nome+' '+p.cognome+' '+p.cognome+' '+p.nome+' '+p.id+' '+p.tel+' '+p.email+' '+p.ig).toLowerCase().includes(q)}
 function card(p,door){
   let h='<div class="item"><div class="top"><div><div class="nm">'+esc(p.nome)+' '+esc(p.cognome)+'</div><div class="mut">'+esc(p.id)+' · '+esc(p.tel)+'</div>';
+  if(!door&&p.email_inviata)h+='<div class="mut">📧 newsletter inviata '+esc(p.email_inviata)+'</div>';
   if(!door)h+='<div class="mut"><a style="color:inherit" href="mailto:'+esc(p.email)+'">'+esc(p.email)+'</a>'+(p.ig?' · <a style="color:inherit" target="_blank" rel="noopener" href="https://instagram.com/'+encodeURIComponent(p.ig)+'">@'+esc(p.ig)+'</a>':'')+'</div><div class="mut">'+esc(p.cf)+' · registrato '+esc(p.data)+'</div>';
   if(p.note)h+='<div class="note">⚠ '+esc(p.note)+'</div>';
   h+='</div><div>'+(p.ingresso?'<span class="pill i">entrato '+esc(p.ora_ingresso)+'</span>':p.pagato?'<span class="pill p">pagato</span>':'<span class="pill">da pagare</span>')+'</div></div><div class="acts">';
@@ -165,8 +179,10 @@ function render(){
   $('list').innerHTML=vis.map(p=>card(p,false)).join('')||'<p class="mut">Nessun risultato</p>';
 }
 function renderDoor(){
-  const q=$('q2').value.trim();
-  $('list2').innerHTML=q.length<2?'':(DATA.rows||[]).filter(p=>match(p,q)).slice(0,20).map(p=>card(p,true)).join('')||'<p class="mut">Nessun risultato</p>';
+  const q=$('q2').value.trim();const rows=DATA.rows||[];
+  $('dIn').textContent=rows.filter(r=>r.ingresso).length;$('dPag').textContent=rows.filter(r=>r.pagato).length;
+  const vis=rows.filter(p=>q?match(p,q):p.pagato).slice().sort((a,b)=>(a.cognome+' '+a.nome).localeCompare(b.cognome+' '+b.nome,'it'));
+  $('list2').innerHTML=vis.map(p=>card(p,true)).join('')||'<p class="mut">Nessun risultato</p>';
 }
 
 document.addEventListener('click',async e=>{
@@ -184,30 +200,13 @@ async function toggle(p,field,forceOn){
   try{
     const r=await api({action:'admin_set',id:p.id,field,value:val?'1':'0'});
     if(!r.ok){toast(r.error,'err');return}
+    if(field==='ingresso'&&val)$('q2').value='';
     p[field]=val;if(field==='ingresso')p.ora_ingresso=r.time;else p.data_pag=r.time;
     render();renderDoor();
     toast(field==='ingresso'?(val?'✓ '+p.nome+' entrato':'Ingresso annullato'):(val?'✓ Pagamento segnato':'Pagamento annullato'),val?'ok':'');
   }catch(e){toast('Errore di rete, riprova','err')}
 }
 
-/* ---------- scanner ---------- */
-let scanner=null,busy=false;
-$('scanBtn').onclick=()=>{if(scanner){stopScan();return}
-  scanner=new Html5Qrcode('reader');$('scanBtn').textContent='Ferma scanner';
-  scanner.start({facingMode:'environment'},{fps:10,qrbox:230},onScan).catch(()=>{toast('Fotocamera non disponibile','err');stopScan()});
-};
-function stopScan(){if(scanner){scanner.stop().catch(()=>{}).finally(()=>{try{scanner.clear()}catch(e){}scanner=null});}$('scanBtn').textContent='Scansiona biglietto'}
-async function onScan(txt){
-  if(busy)return;busy=true;
-  try{
-    const [pre,id,t]=String(txt).split('|');
-    const p=(DATA.rows||[]).find(r=>r.id===id);
-    if(pre!=='NM'||!p||p.token!==t){toast('Biglietto non valido','err');return}
-    if(p.ingresso){toast('⚠ '+p.nome+' '+p.cognome+' GIÀ ENTRATO alle '+p.ora_ingresso,'err');return}
-    if(!p.pagato){toast('⚠ '+p.nome+' '+p.cognome+' NON PAGATO','err');return}
-    await toggle(p,'ingresso',true);
-  }finally{setTimeout(()=>busy=false,2500)}
-}
 
 /* ---------- impostazioni ---------- */
 const FIELDS=[
@@ -246,6 +245,35 @@ async function loadCfg(){
     $('cfgForm').innerHTML=h;
   }catch(e){toast('Errore caricamento impostazioni','err')}
 }
+/* ---------- newsletter ---------- */
+const NLF=[['nl_oggetto','Oggetto email'],['nl_intro','Introduzione (dopo "Ciao Nome,")','ta'],['nl_orari','Gli orari (una riga per orario)','ta'],['nl_vestire','Cosa indossare','ta'],['nl_tag','I tag','ta'],['nl_allergie','Allergie e intolleranze','ta'],['nl_chiusura','Chiusura','ta']];
+let nlLoaded=false;
+async function nlLoad(){
+  try{const r=await api({action:'admin_config_get'});if(!r.ok)return;
+    $('nlForm').innerHTML=NLF.map(f=>'<label class="f"><span>'+f[1]+'</span>'+(f[2]?'<textarea data-n="'+f[0]+'">'+esc(r.config[f[0]]||'')+'</textarea>':'<input data-n="'+f[0]+'" value="'+esc(r.config[f[0]]||'')+'">')+'</label>').join('');nlLoaded=true;
+  }catch(e){}
+}
+function nlStat(){
+  if(!nlLoaded)nlLoad();
+  const rows=DATA.rows||[];const pag=rows.filter(r=>r.pagato);const da=pag.filter(r=>!r.email_inviata).length;
+  $('nlStat').textContent=pag.length+' paganti · '+(pag.length-da)+' già inviate · '+da+' da inviare';
+  $('nlSend').disabled=!da;$('nlSend').textContent=da?'Invia a '+da+' paganti':'Nessuno da inviare';
+}
+async function nlSaveData(){const o={};document.querySelectorAll('#nlForm [data-n]').forEach(el=>o[el.dataset.n]=el.value);const r=await api({action:'admin_config_save',cfg:JSON.stringify(o)});if(!r.ok)throw new Error(r.error);}
+$('nlSave').onclick=async()=>{try{await nlSaveData();toast('Salvato ✓','ok')}catch(e){toast('Errore nel salvataggio','err')}};
+$('nlPrev').onclick=async()=>{try{await nlSaveData();const r=await api({action:'nl_preview'});if(!r.ok){toast(r.error,'err');return}
+  const f=$('nlFrame');f.classList.remove('hide');f.srcdoc='<div style="font:13px Helvetica,Arial;color:#666;padding:10px;border-bottom:1px solid #eee">Oggetto: <b style="color:#111">'+esc(r.oggetto)+'</b></div><div style="padding:14px">'+r.html+'</div>';}catch(e){toast('Errore','err')}};
+try{$('nlTo').value=localStorage.getItem('nm_nlto')||''}catch(e){}
+$('nlTest').onclick=async()=>{const to=$('nlTo').value.trim();try{localStorage.setItem('nm_nlto',to)}catch(e){}
+  try{await nlSaveData();const r=await api({action:'nl_test',email:to});toast(r.ok?'Prova inviata a '+to:r.error,r.ok?'ok':'err')}catch(e){toast('Errore di rete','err')}};
+$('nlSend').onclick=async()=>{const n=(DATA.rows||[]).filter(r=>r.pagato&&!r.email_inviata).length;
+  if(!confirm('Inviare la newsletter a '+n+' paganti? Chi l\'ha già ricevuta non la riceve di nuovo.'))return;
+  const b=$('nlSend');b.disabled=true;b.textContent='Invio in corso…';
+  try{await nlSaveData();const r=await api({action:'nl_send'});
+    if(!r.ok){toast(r.error,'err')}else{toast(r.inviate+' email inviate'+(r.mancanti?' · '+r.mancanti+' oltre il limite giornaliero, riprova domani':'')+(r.errori?' · '+r.errori+' errori':''),r.mancanti||r.errori?'err':'ok');await load();}
+  }catch(e){toast('Errore di rete: controlla nell\'elenco chi l\'ha ricevuta e riprova','err');await load()}
+  finally{nlStat()}};
+
 $('saveCfg').onclick=async()=>{
   const o={};document.querySelectorAll('#cfgForm [data-k]').forEach(el=>o[el.dataset.k]=el.value);
   try{const r=await api({action:'admin_config_save',cfg:JSON.stringify(o)});toast(r.ok?'Salvato ✓':r.error,r.ok?'ok':'err');if(r.ok)load()}
